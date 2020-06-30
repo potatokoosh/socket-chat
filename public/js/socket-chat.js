@@ -22,7 +22,8 @@ socket.on('connect', function(){
 
     //este usuario viene por params del var usuario mensionado arriba
     socket.emit('entrarChat', usuario, function(resp){
-        console.log('Usuarios conectados', resp);
+        //console.log('Usuarios conectados render', resp);
+        renderizarUsuarios(resp);
     })
 });
 
@@ -45,12 +46,16 @@ socket.on('disconnect', function(){
 
 //on: evento para escuchar informacion,, recibe una function
 socket.on('crearMensaje', function(mensaje){
-    console.log('Servidor:', mensaje);
+    //console.log('Servidor:', mensaje);
+    renderizarMensajes(mensaje, false);//aqui ponemos false por que lo que queremos diferenciar es la vista del chat de conversacion, y este escucha el mensaje de quien lo emit, y en este caso el if(yo) debe de ser false para que renderizarMensajes tome el else
+
+    scrollBottom();// llamamos esta funcion para para que cuando se escriba un mensaje la pantalla de vista de mensajes siempre este  mostrando el ultimo mensaje escrito
 });
 
 //Escuchar cambios de usuarios,, cuando un usuario entra o sale del chat
 socket.on('ListaPersona', function(personas){
     console.log(personas);
+    renderizarUsuarios(personas)
 });
 
 // Mensajes privados

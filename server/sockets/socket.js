@@ -26,17 +26,23 @@ io.on('connection', (client) => {
       //evento que va a indicar cada ves que una persona entre o salga da la sala de chat, solo a los de la misma sala
       client.broadcast.to(data.sala).emit('ListaPersona', usuarios.getPersonasPorSala(data.sala));
 
+      //notificamos en la sala del chat cuando un usuario se conecta o entra a la sala
+      client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Administrador', `${ data.nombre } se unio`));
+
       callback(usuarios.getPersonasPorSala(data.sala));
 
   });
 
-  client.on('crearMensaje', (data) => {
+  client.on('crearMensaje', (data, callback) => {
 
     let persona = usuarios.getPersona(client.id);
 
     let mensaje = crearMensaje( persona.nombre, data.mensaje );
     //vamos a enviar mensaje solo a las personas que esten en la misma sala
     client.broadcast.to(persona.sala).emit('crearMensaje', mensaje);
+
+    callback(mensaje);// con este callback obtengo la respuesta del servidor indicando que si se hizo la notificacion del mensaje en la sala
+
   });
 
   client.on('disconnect', ()=> {
